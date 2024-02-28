@@ -10,5 +10,5 @@ Bowtie
 SPAdes  
 
 # Instructions
-Download PipelineProject_Tessa_Patton.py and the HCMV_input files to your working directory. To run the script use the command: python PipelineProject_Tessa_Patton.py
+Download pipelineproject_28FEB24.py and the HCMV_input folder to your working directory. To run the script use the command: python PipelineProject_Tessa_Patton.py
 All outputs will be written to a directory called PipelineProject_Tessa_Patton in the log file called PipelineProject.log.
