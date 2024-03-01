@@ -14,4 +14,5 @@ You should add all dependencies to your path prior to running this script
 
 # Instructions
 Download pipelineproject_28FEB24.py and the HCMV_input folder to your working directory. Make sure that your directory called HCMV_input contains all of the same files as mine (HCMV index files and sample .fastq files). To run the script use the command: `python PipelineProject_Tessa_Patton.py`
+
 All outputs will be written to a directory called PipelineProject_Tessa_Patton including a log file called PipelineProject.log.
