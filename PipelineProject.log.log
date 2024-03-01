@@ -1,0 +1,18 @@
+Donor SRR5660033 had 2004530 read pairs before Bowtie2 filtering and 1249472 read pairs after
+Donor SRR5660030 had 2259287 read pairs before Bowtie2 filtering and 1562296 read pairs after
+Donor SRR5660045 had 2476889 read pairs before Bowtie2 filtering and 1274769 read pairs after
+Donor SRR5660044 had 2730258 read pairs before Bowtie2 filtering and 1922300 read pairs after
+spades.py -k 77,99,127 -t 2 -o PipelineProject_Tessa_Patton --only-assembler -1 HCMV_input/SRR5660030_aligned_conc1.fastq.gz -2 HCMV_input/SRR5660030_aligned_conc2.fastq.gz -1 HCMV_input/SRR5660033_aligned_conc1.fastq.gz -2 HCMV_input/SRR5660033_aligned_conc2.fastq.gz -1 HCMV_input/SRR5660044_aligned_conc1.fastq.gz -2 HCMV_input/SRR5660044_aligned_conc2.fastq.gz -1 HCMV_input/SRR5660045_aligned_conc1.fastq.gz -2 HCMV_input/SRR5660045_aligned_conc2.fastq.gz
+There are 25 contigs > 1000 bp in the assembly
+There are 199451 bp in the assembly
+sacc	pident	length	qstart	qend	sstart	send	bitscore	evalue	stitle
+NC_006273.2	98.943	36418	144	36546	87943	51535	65097	0.0	NC_006273.2 Human herpesvirus 5 strain Merlin, complete genome
+NC_003521.1	89.722	1401	648	2045	85403	84006	1784	0.0	NC_003521.1 Panine herpesvirus 2 strain Heberling, complete genome
+NC_075417.1	83.816	1347	649	1985	141522	142857	1260	0.0	NC_075417.1 Mandrillus leucophaeus cytomegalovirus isolate OCOM6-2, complete genome
+NC_055235.1	83.705	1344	650	1985	127324	128658	1253	0.0	NC_055235.1 Papiine betaherpesvirus 3, complete genome, *** SEQUENCING IN PROGRESS ***, 22 unordered pieces
+NC_027016.1	83.605	1348	649	1985	143422	144757	1243	0.0	NC_027016.1 Papio ursinus cytomegalovirus isolate OCOM4-52, complete genome
+NC_016154.1	85.348	1208	782	1984	76562	75360	1242	0.0	NC_016154.1 Cynomolgus macaque cytomegalovirus strain Ottawa, complete genome
+NC_012783.2	85.311	1205	782	1984	81802	80600	1242	0.0	NC_012783.2 Cercopithecine herpesvirus 5 strain 2715, complete genome
+NC_033176.1	85.182	1208	782	1984	81543	80341	1230	0.0	NC_033176.1 Cynomolgus cytomegalovirus isolate 31908, complete genome
+NC_006150.1	83.824	1292	698	1984	82611	81325	1219	0.0	NC_006150.1 Macacine herpesvirus 3, complete genome
+NC_016447.1	77.632	1216	782	1985	79625	78422	717	0.0	NC_016447.1 Aotine herpesvirus 1 strain S34E, complete genome
