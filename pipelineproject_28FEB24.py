@@ -20,30 +20,34 @@ def run_bowtie2(input_dir, index_prefix, log_file):
     fastq_pairs = find_fastq_pairs(input_dir) #use prev function to look at the input directory from github
     for prefix, files in fastq_pairs.items():
         forward_read, reverse_read = [os.path.join(input_dir, f)  for f in files] #assign _1 and _2 to variables forward and reverse read
-        aligned_output_prefix = os.path.join(input_dir, f"{prefix}_aligned") #filename for aligned reads
+        aligned_output_prefix = os.path.join(input_dir, f"{prefix}_aligned_conc") #filename for aligned reads
         output_sam = f"{aligned_output_prefix}.sam" #filename for output sam file
         bowtie2_command = f"bowtie2 -x {index_prefix} -1 {forward_read} -2 {reverse_read} --al-conc-gz {aligned_output_prefix}%.fastq.gz -S {output_sam}" #make bowtie2 command with flag to save only mapped reads in new fastq.gz files
         os.system(bowtie2_command) #run the command!
         ####count reads####
+        input_read_count = 0
+        for file in [forward_read, reverse_read]:
+            with gzip.open(file, "rt") if file.endswith('.gz') else open(file, "r") as handle: #should be .gz files, but maybe .fasta? 
+                input_read_count += sum(1 for _ in SeqIO.parse(handle, "fastq")) / 2
         aligned_reads_1 = f"{aligned_output_prefix}1.fastq.gz"
         aligned_reads_2 = f"{aligned_output_prefix}2.fastq.gz"
         import gzip
         with gzip.open(aligned_reads_1, "rt") as handle:
-            aligned_pairs_count = sum(1 for _ in SeqIO.parse(handle, "fastq"))  #count the reads by parsing fastq files with SeqIO
-        
+            aligned_pairs_count = sum(1 for _ in SeqIO.parse(handle, "fastq")) #count the saved reads by parsing fastq files with SeqIO
+
         with open(log_file, "a") as log:
-            log.write(f"Donor {prefix} had 10,000 read pairs before Bowtie2 filtering and {aligned_pairs_count} read pairs after\n") #ugh i know the prefix is wrong - come back to this with a dict to link to metadata if time. 
+            log.write(f"Donor {prefix} had {int(input_read_count)} read pairs before Bowtie2 filtering and {aligned_pairs_count} read pairs after\n") #ugh i know the prefix is wrong - come back to this with a dict to link to metadata if time. 
         
         output_files.extend([aligned_reads_1, aligned_reads_2])
     return output_files
 
 def run_spades(input_dir, output_dir, log_file):
-    aligned_fastq_files = [f for f in os.listdir(input_dir) if f.endswith('_conc.1.gz') or f.endswith('_conc.2.gz')] #get pairs of fastq.gz files from bowtie2 output
+    aligned_fastq_files = [f for f in os.listdir(input_dir) if f.endswith('_conc1.fastq.gz') or f.endswith('_conc2.fastq.gz')] #get pairs of fastq.gz files from bowtie2 output
     aligned_fastq_files.sort() #ensure pairs are adjacent
     pe_args = [] #to store pairs 
     for i in range(0, len(aligned_fastq_files), 2):
         pe_args.append(f"-1 {input_dir}/{aligned_fastq_files[i]} -2 {input_dir}/{aligned_fastq_files[i+1]}") #store filtered fastq files with the -1 and -2 flags for spades
-    spades_command = f"spades.py -k 77,99,127 -t 2 -o {output_dir} --only-assembler " + " ".join(pe_args) #set up spades command - flags pulled from compbio ppt
+    spades_command = f"spades.py -k 77,99,127 -t 2 -o {output_dir} --only-assembler --quiet " + " ".join(pe_args) #set up spades command - flags pulled from compbio ppt
     os.system(spades_command) #run the command
     with open(log_file, "a") as log:
         log.write(f"{spades_command}\n") #write this to the log file
@@ -76,31 +80,31 @@ def blast_longest_contig(long_contigs, db_name, log_file):
             log.write(line) #put each line from blast output into the log file
 
 directory = os.getcwd()
-download_command = f"datasets download virus genome taxon betaherpesvirinae --refseq --filename betaherpesvirinae.zip" #use NCBI datasets tool to make 'local' database
+download_command = f"datasets download virus genome taxon betaherpesvirinae --refseq --include genome" #use NCBI datasets tool 
 os.system(download_command) #run the command
-os.system(f"unzip -o betaherpesvirinae.zip -d {directory}/betaherpesvirinae_db") #unzip the file and send it to a new file in the working directory
+os.system(f"unzip -o ncbi_dataset.zip") #unzip the file
+os.system(f"makeblastdb -in ncbi_dataset/data/genomic.fna -out HCMV -title HCMV -dbtype nucl")
 
 def main():
     input_dir = "HCMV_input"
-    index_prefix = "HCMV"
+    index_prefix = os.path.join(input_dir, "HCMV")
     output_dir = "PipelineProject_Tessa_Patton"
     log_file = "PipelineProject.log"
-    db_name = "betaherpesvirinae_db"
+    db_name = "HCMV"
     
-    # Clear or create the log file
+    #clear or create the log file
     open(log_file, 'w').close()
-    
-    # Run Bowtie2
+    #run Bowtie2
     bowtie2_outputs = run_bowtie2(input_dir, index_prefix, log_file)
-    
-    # Run SPADes
-    run_spades(bowtie2_outputs, output_dir, log_file)
-    
-    # Analyze the assembly
+    #run SPADes
+    run_spades(input_dir, output_dir, log_file)
+    #analyze the assembly
     long_contigs = analyze_assembly(output_dir, log_file, db_name)
-    
-    # BLAST the longest contig
+    #blast the longest contig
     blast_longest_contig(long_contigs, db_name, log_file)
 
 if __name__ == "__main__":
     main()
+
+os.system(f"mv PipelineProject.log PipelineProject_Tessa_Patton/")
+os.system(f"mv HCMV_input/*.fastq.gz PipelineProject_Tessa_Patton/")
