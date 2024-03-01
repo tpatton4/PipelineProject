@@ -47,7 +47,7 @@ def run_spades(input_dir, output_dir, log_file):
     pe_args = [] #to store pairs 
     for i in range(0, len(aligned_fastq_files), 2):
         pe_args.append(f"-1 {input_dir}/{aligned_fastq_files[i]} -2 {input_dir}/{aligned_fastq_files[i+1]}") #store filtered fastq files with the -1 and -2 flags for spades
-    spades_command = f"spades.py -k 77,99,127 -t 2 -o {output_dir} --only-assembler --quiet " + " ".join(pe_args) #set up spades command - flags pulled from compbio ppt
+    spades_command = f"spades.py -k 77,99,127 -t 2 -o {output_dir} --only-assembler " + " ".join(pe_args) #set up spades command - flags pulled from compbio ppt
     os.system(spades_command) #run the command
     with open(log_file, "a") as log:
         log.write(f"{spades_command}\n") #write this to the log file
@@ -106,5 +106,8 @@ def main():
 if __name__ == "__main__":
     main()
 
+#move other output files to pipelineproj directory
 os.system(f"mv PipelineProject.log PipelineProject_Tessa_Patton/")
 os.system(f"mv HCMV_input/*.fastq.gz PipelineProject_Tessa_Patton/")
+os.system(f"mv HCMV* PipelineProject_Tessa_Patton/")
+os.system(f"mv longest_contig.fasta PipelineProject_Tessa_Patton/")
